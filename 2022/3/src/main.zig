@@ -21,22 +21,31 @@ pub fn main() !void {
     var buf: [1024]u8 = undefined;
 
     var total_score:usize = 0;
+    var sets : [3]std.DynamicBitSet = undefined;
+    sets[0] = try std.DynamicBitSet.initEmpty(allocator, 52);
+    sets[1] = try std.DynamicBitSet.initEmpty(allocator, 52);
+    sets[2] = try std.DynamicBitSet.initEmpty(allocator, 52);
+    defer sets[0].deinit();
+    defer sets[1].deinit();
+    defer sets[2].deinit();
+    var index:usize=0;
     while(try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
-      var c1 = try std.DynamicBitSet.initEmpty(allocator, 52);
-      defer c1.deinit();
-      var c2 = try std.DynamicBitSet.initEmpty(allocator, 52);
-      defer c2.deinit();
-      const n = std.mem.len(line);
-      for (line) |c, index| {
-         // std.debug.print("{} -> {}\n", .{c, score(c)});
-         if (index < n) {
-            c1.set(score(c)-1);
-         } else {
-            c2.set(score(c)-1);
-         }
-         c1.setIntersection(c2);
-         total_score += (c1.findFirstSet() orelse 0)+1;
+      const i = index % 3;
+      for (line) |c| {
+         sets[i].set(score(c)-1);
       }
+      if (i==2) {
+        sets[0].setIntersection(sets[1]);
+        sets[0].setIntersection(sets[2]);
+        total_score += (sets[0].findFirstSet() orelse 0)+1;
+        var j:usize=0;
+        while (j<52) : (j+=1) {
+           sets[0].unset(j);
+           sets[1].unset(j);
+           sets[2].unset(j);
+        }
+     }
+     index+=1;
     }
     try std.io.getStdOut().writer().print("Task1: {}", .{total_score});
 }
