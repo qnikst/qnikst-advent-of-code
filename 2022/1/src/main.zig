@@ -15,8 +15,7 @@ pub fn main() !void {
 
     var current: usize = 0;
     
-    const List = std.ArrayList(usize);
-    var list = List.init(allocator);
+    var list = std.ArrayList(usize).init(allocator);
     defer list.deinit();
 
     while( try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
