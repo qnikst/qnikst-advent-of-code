@@ -1,6 +1,6 @@
 const std = @import("std");
 
-fn cmp(_: void, a:i32, b:i32) bool {
+fn cmp(_: void, a:usize, b:usize) bool {
    return (a > b);
 }
 
@@ -17,9 +17,9 @@ pub fn main() !void {
     var in_stream = buf_reader.reader();
     var buf: [1024]u8 = undefined;
 
-    var current: i32 = 0;
+    var current: usize = 0;
     
-    const List = std.ArrayList(i32);
+    const List = std.ArrayList(usize);
     var list = List.init(allocator);
     defer list.deinit();
 
@@ -28,11 +28,11 @@ pub fn main() !void {
          try list.append(current);
          current = 0;
       } else {
-         current += try std.fmt.parseInt(i32, line, 10);
+         current += try std.fmt.parseInt(usize, line, 10);
       }
     }
     var x = list.toOwnedSlice();
-    std.sort.sort(i32, x, {}, cmp);
+    std.sort.sort(usize, x, {}, cmp);
     try std.io.getStdOut().writer().print("{}\n", .{x[0]+x[1]+x[2]});
     allocator.free(x);
 }
