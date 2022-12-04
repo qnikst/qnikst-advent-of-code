@@ -1,9 +1,5 @@
 const std = @import("std");
 
-fn cmp(_: void, a:usize, b:usize) bool {
-   return (a > b);
-}
-
 pub fn main() !void {
 
     var gp = std.heap.GeneralPurposeAllocator(.{ }){};
@@ -31,9 +27,18 @@ pub fn main() !void {
          current += try std.fmt.parseInt(usize, line, 10);
       }
     }
-    var x = list.toOwnedSlice();
-    std.sort.sort(usize, x, {}, cmp);
-    try std.io.getStdOut().writer().print("{}\n", .{x[0]+x[1]+x[2]});
-    allocator.free(x);
+     
+    { 
+      var x = list.toOwnedSlice();
+      defer allocator.free(x);
+      std.sort.sort(usize, x, {}, 
+         struct{
+             fn function(_: void, a:usize, b:usize) bool {
+                 return (a > b);
+             }
+         }.function,
+      );
+      try std.io.getStdOut().writer().print("{}\n", .{x[0]+x[1]+x[2]});
+    }
 }
 
