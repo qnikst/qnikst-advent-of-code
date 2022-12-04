@@ -7,6 +7,7 @@ pub fn main() !void {
     var buf: [1024]u8 = undefined;
 
     var total:usize=0;
+    var total2:usize=0;
     while(try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
        var iter = std.mem.split(u8, line, ",");
        const first_line = iter.next() orelse "";
@@ -29,9 +30,12 @@ pub fn main() !void {
        if ((a1 < a2 and b2 <= b1) or (a1>=a2 and b2 >= b1)) {
            total += 1;   
        }
+       if (a2 <= b1 and a1<=b2) {
+           total2 += 1;   
+       }
 
     }
 
-    try std.io.getStdOut().writer().print("Result: {}\n", .{total});
+    try std.io.getStdOut().writer().print("Result: {}\nPt2: {}\n", .{total, total2});
 }
 
