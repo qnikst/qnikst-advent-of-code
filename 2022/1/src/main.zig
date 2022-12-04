@@ -12,10 +12,10 @@ pub fn main() !void {
 
     var file = try std.fs.cwd().openFile("foo.txt", .{});
     defer file.close();
-
-    const buffer_size = 2000000;
-    const file_buffer = try file.readToEndAlloc(allocator, buffer_size);
-    defer allocator.free(file_buffer);
+    
+    var buf_reader = std.io.bufferedReader(file.reader());
+    var in_stream = buf_reader.reader();
+    var buf: [1024]u8 = undefined;
 
     var current: i32 = 0;
     
@@ -23,8 +23,7 @@ pub fn main() !void {
     var list = List.init(allocator);
     defer list.deinit();
 
-    var iter= std.mem.split(u8, file_buffer, "\n");
-    while (iter.next()) |line| : {
+    while( try in_stream.readUntilDelimiterOrEof(&buf, '\n')) |line| {
       if (std.mem.eql(u8,line,"")) {
          try list.append(current);
          current = 0;
