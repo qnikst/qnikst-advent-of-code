@@ -3,8 +3,6 @@ import qualified Data.Map as M
 
 main = do
   input <- lines <$> getContents
-  -- print input
-  -- print $ process input ["/"] M.empty
   let s = process input ["/"] M.empty
   let total_current = s M.! []
   print $ sum $ M.elems $ M.filter (<= 100000) s
